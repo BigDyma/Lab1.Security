@@ -6,7 +6,11 @@ namespace Lab1.Security
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            AuditFile audit = new AuditFile(@"C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\Lib\CIS_Cisco_IOS_15_v4.1.0_Level_1.audit");
+
+            audit.Parse();
+
+            var result = audit.GlobalTag;
         }
     }
 }

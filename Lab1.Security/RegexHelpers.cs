@@ -7,11 +7,13 @@ namespace Lab1.Security
 {
     public static class RegexHelpers
     {
-        public static string TagRegex = "^\\s*<([//A-Za-z0-9\\-\\\\_\\s]+([//:]?\"[//A-Za-z0-9\\\\-\\\\_\\s]+\")?)>$";
+        public static string TagRegex = "^\\s*<([A-Za-z\\-\\\\_\\s]+([:]?\"[A-Za-z\\\\-\\\\_\\s]+\")?)>$";
+
+        public static string CloseTagRegex = "^\\s+</([A-Za-z\\-\\\\_\\s]+([//:]?\"[A-Za-z\\\\-\\\\_\\s]+\")?)>$";
 
         public static string ParametersInfoOneLineRegex = "^\\s+[A-Za-z0-9\\-\\\\_]+\\s+:\\s+(\".+\\n?)\"$";
 
-        public static string ParametersInfoNotClosedQuoteRegex = "^\\s+[A-Za-z0-9\\-\\\\_]+\\s+:\\s+(\".+\\n?)\"?$";
+        public static string ParametersInfoNotClosedQuoteRegex = "^\\s+[A-Za-z0-9\\-\\\\_]+\\s+:\\s+(\".+\\n?)\\n$";
 
         public static string ParametersTypeRegex = "^\\s+[A-Za-z0-9\\-\\\\_]+\\s+:\\s+([A-Z\\\\_]+)$";
 

@@ -13,118 +13,117 @@ namespace Lab1.Security
 
         public Tag GlobalTag { get; set; }
 
-        public string[] Content { get; set; }
+        private string[] Content { get; set; }
 
-        public int RecursionStartIndex { get; set; }
-        public int ContentLength => Content.Length;
+        private int ContentLength => Content.Length;
         public AuditFile(string _path)
         {
             Path = _path;
             Content = File.ReadAllLines(Path);
 
         }
-        private void SeedFirstTag()
-        {
 
-            foreach (var item in Content.Select((value, index) => new { value, index }))
-            {
-                var line = item.value;
-                var index = item.index;
-                if (TagUtilsProvider.IsValidTag(item.value))
-                {
-                    TagUtilsProvider provider = new TagUtilsProvider(item.value);
-
-                    GlobalTag = CreateTagFromTagUtilsProvider(provider);
-                    RecursionStartIndex = item.index;
-                    break;
-                }
-            }
-        }
         public void Parse()
         {
-            SeedFirstTag();
-
-            GlobalTag.RegisterChildTag(ReccursiveParsing(RecursionStartIndex));
+            GlobalTag = ReccursiveParsing();
         }
 
-        public Tag ParseTag(string line)
+        private List<Parameter> ParseParameters( ref int n)
         {
-
-            if (TagUtilsProvider.IsValidTag(line))
-            {
-                TagUtilsProvider provider = new TagUtilsProvider(line);
-
-                return CreateTagFromTagUtilsProvider(provider);
-            }
-            else throw new Exception("something bad is happening, run!");
-        }
-
-        // @TODO move this to utils
-        private Tag CreateTagWithAttributes(TagUtilsProvider provider)
-        {
-             return new Tag(provider.GetTagName, provider.GetTagValue);
-        }
-
-        private Tag CreateTagWithNoAttributes(TagUtilsProvider provider)
-        {
-            return new Tag(provider.GetTagName);
-        }
-
-        private Tag CreateTagFromTagUtilsProvider(TagUtilsProvider provider)
-        {
-            if (!provider.IsValidTag())
-                throw new Exception("what the hell");
-
-            if (provider.IsTagWithAttributes)
-              return  CreateTagWithAttributes(provider);
-
-            return CreateTagWithNoAttributes(provider);
-        }
-
-        public List<Parameter> ParseParameters( ref int n)
-        {
+            var initialIndex = n;
             List<Parameter> parameters = new List<Parameter>();
-            foreach (var item in Content.Skip(n).ToArray().Select((value, index) => new { value, index }))
+            for (var item = initialIndex; item < Content.Length; item++)
             {
-                var line = item.value;
-                n = item.index;
+                var line = Content[item];
 
-                if (ParametersUtils.IsValidParameterAsClosedString(line) || ParametersUtils.IsValidParameterAsType(line))
+                if (ParametersUtils.IsValidParameterAsClosedString(line) || ParametersUtils.IsValidParameterAsType(line) || ParametersUtils.IsValidParameterAsNonClosedString(line))
                 {
-                     parameters.Add(ParametersUtils.CreateParameterFromLineForClosedStrings(line));
+                    if (ParametersUtils.IsValidParameterAsNonClosedString(line))
+                    {
+                        ParseOpenStringParameter(ref item, ref line);
+                    }
+                    parameters.Add(ParametersUtils.CreateParameterFromLineForClosedStrings(line));
+                    n = item;
                 }
-                else if (ParametersUtils.IsValidParameterAsNonClosedString(line))
-                {
-                    // @TODO finish this
-                    parameters.Add(ParametersUtils.CreateParameterFromLineForNonClosedString(line));
-                }
+                else break;
             }
 
             return parameters;
         }
 
-        public Tag ReccursiveParsing(int n)
+        private void ParseOpenStringParameter(ref int item, ref string line)
         {
-            if (n == ContentLength - 1)
-                return null;
-
-            
-
-            Tag localTag = ParseTag(Content[n]);
-            foreach (var item in Content.Skip(n).ToArray().Select((value, index) => new  { value, index }))
+            int localIndex = item;
+            for (var openLine = localIndex; item <= Content.Length; item++)
             {
-                var line = item.value;
-                var index = item.index;
+                var lastChar = Content[openLine].Trim().Last();
+                if (lastChar == '"')
+                    break;
 
+                line += Content[openLine];
+
+                item = openLine;
+            }
+        }
+        private Tag ParseNextTag(ref int n, Tag recoveryTag)
+        {
+            for (int i = n; i < ContentLength; i++)
+            {
+                var line = Content[i];
+                var index = i;
+                if (TagUtilsProvider.IsValidTag(line))
+                {
+                    TagUtilsProvider provider = new TagUtilsProvider(line);
+                    n = index+1;
+                    return TagFactory.CreateTagFromTagUtilsProvider(provider);
+                }
                 if (ParametersUtils.IsValidParameter(line))
                 {
-                    localTag.RegisterParameter(ParseParameters(ref index));
+                    recoveryTag.RegisterParameter(ParseParameters(ref index));
+                    n = index +1;
+                    break;
                 }
-                //@TODO check if it's closing tag
-
-               localTag.RegisterChildTag(ReccursiveParsing(index));    
-
+               
             }
+            return recoveryTag;
+        }
+
+        private Tag ReccursiveParsing(int n = 0, Tag recoveryTag = null)
+        {
+            if (n == ContentLength)
+                return null;
+            Tag localTag = ParseInDepth(n, recoveryTag); 
+
+            return localTag;
+        }
+
+        private Tag ParseInDepth(int n, Tag recoveryTag)
+        {
+            Tag localTag = null;
+            for (int localIndex = n; localIndex < ContentLength;)
+            {
+                var line = Content[localIndex];
+                var index = localIndex;
+
+                if (TagUtilsProvider.IsValidClosingTag(line))
+                {
+                    TagUtilsProvider closingTag = new TagUtilsProvider(line);
+
+                    recoveryTag.CloseTag(closingTag.GetClosingTagName);
+                    recoveryTag.closeTagIndex = localIndex;
+                    return recoveryTag;
+                }
+
+                
+                localTag = ParseNextTag(ref localIndex, recoveryTag);
+
+                line = Content[localIndex];
+                index = localIndex;
+
+                localTag.RegisterChildTag(ReccursiveParsing(index, localTag));
+                localIndex = localTag.closeTagIndex + 1;
+            }
+
             return localTag;
         }
     }

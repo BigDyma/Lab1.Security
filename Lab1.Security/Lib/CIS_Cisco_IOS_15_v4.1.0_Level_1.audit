@@ -1,0 +1,19 @@
+ <condition type:"AND">
+    <asdf>
+      type        : CONFIG_CHECK
+      description : "Check if Cisco IOS 15 is installed"
+      item        : "^version 15"
+    </asdf>
+    <reqw>
+      type        : CONFIG_CHECK
+      description : "Check if Cisco IOS 15 is installed"
+      item        : "^version 15"
+    </reqw>
+    <ceva>
+         <qwer>
+              type        : CONFIG_CHECK
+              description : "Check if Cisco IOS 15 is installed"
+              item        : "^version 15"
+        </qwer>
+    </ceva>
+  </condition>
