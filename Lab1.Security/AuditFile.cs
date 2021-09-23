@@ -11,7 +11,7 @@ namespace Lab1.Security
     {
         public string Path { get; set; } 
 
-        public Tag GlobalTag { get; set; }
+        public Tag ResultJSON { get => ReccursiveParsing();  }
 
         private string[] Content { get; set; }
 
@@ -23,10 +23,6 @@ namespace Lab1.Security
 
         }
 
-        public void Parse()
-        {
-            GlobalTag = ReccursiveParsing();
-        }
 
         private List<Parameter> ParseParameters( ref int n)
         {
@@ -65,7 +61,27 @@ namespace Lab1.Security
                 item = openLine;
             }
         }
-        private Tag ParseNextTag(ref int n, Tag recoveryTag)
+
+        private Tag SearchForParameters(ref int n, Tag recoveryTag)
+        {
+            for (int i = n+1; i < ContentLength; i++)
+            {
+                var line = Content[i];
+                var index = i;
+                if (TagUtilsProvider.IsValidTag(line))
+                    return recoveryTag;
+                if (ParametersUtils.IsValidParameter(line))
+                {
+                    recoveryTag.RegisterParameter(ParseParameters(ref index));
+                    n = index;
+                    break;
+                }
+
+            }
+            return recoveryTag;
+        }
+
+        private Tag ParseThisLineAsTag(ref int n, Tag recoveryTag)
         {
             for (int i = n; i < ContentLength; i++)
             {
@@ -74,16 +90,9 @@ namespace Lab1.Security
                 if (TagUtilsProvider.IsValidTag(line))
                 {
                     TagUtilsProvider provider = new TagUtilsProvider(line);
-                    n = index+1;
+                    n = index;
                     return TagFactory.CreateTagFromTagUtilsProvider(provider);
                 }
-                if (ParametersUtils.IsValidParameter(line))
-                {
-                    recoveryTag.RegisterParameter(ParseParameters(ref index));
-                    n = index +1;
-                    break;
-                }
-               
             }
             return recoveryTag;
         }
@@ -92,39 +101,60 @@ namespace Lab1.Security
         {
             if (n == ContentLength)
                 return null;
-            Tag localTag = ParseInDepth(n, recoveryTag); 
+            int localIndex;
+            Tag localTag;
 
-            return localTag;
+            TreatItLikeATag(n, recoveryTag, out localIndex, out localTag);
+
+            if (!localTag.IsTagClosed)
+            {
+                for (int nestedIndex = localIndex; nestedIndex < ContentLength && !localTag.IsTagClosed;)
+                {
+                    var localline = Content[localIndex];
+                    Tag ChildTag = ReccursiveParsing(localIndex + 1, localTag);
+
+
+                    localIndex = ChildTag.closeTagIndex;
+                    nestedIndex = localIndex;
+                    localTag.RegisterChildTag(ChildTag);
+                    localTag = SearchForClosingTag(ref localIndex, localTag);
+                }
+            }
+           return localTag; 
         }
 
-        private Tag ParseInDepth(int n, Tag recoveryTag)
+        private void TreatItLikeATag(int n, Tag recoveryTag, out int localIndex, out Tag localTag)
         {
-            Tag localTag = null;
-            for (int localIndex = n; localIndex < ContentLength;)
-            {
-                var line = Content[localIndex];
-                var index = localIndex;
+            localIndex = n;
 
-                if (TagUtilsProvider.IsValidClosingTag(line))
+            localTag = ParseThisLineAsTag(ref localIndex, recoveryTag);
+            localTag = SearchForParameters(ref localIndex, localTag);
+            localTag = SearchForClosingTag(ref localIndex, localTag);
+        }
+
+        private Tag SearchForClosingTag(ref int n, Tag recoveryTag)
+        {
+            for (int i = n+1; i < ContentLength; i++)
+            {
+                var line = Content[i];
+                if (TagUtilsProvider.IsValidTag(line) || ParametersUtils.IsValidParameter(line))
+                {
+                    return recoveryTag;
+                }
+                else if (TagUtilsProvider.IsValidClosingTag(line))
                 {
                     TagUtilsProvider closingTag = new TagUtilsProvider(line);
 
-                    recoveryTag.CloseTag(closingTag.GetClosingTagName);
-                    recoveryTag.closeTagIndex = localIndex;
+                    if (recoveryTag.CloseTag(closingTag.GetClosingTagName))
+                    { 
+                        recoveryTag.closeTagIndex = i;
+                        n = i;
+                    }
+
                     return recoveryTag;
                 }
-
-                
-                localTag = ParseNextTag(ref localIndex, recoveryTag);
-
-                line = Content[localIndex];
-                index = localIndex;
-
-                localTag.RegisterChildTag(ReccursiveParsing(index, localTag));
-                localIndex = localTag.closeTagIndex + 1;
             }
-
-            return localTag;
+            return recoveryTag;
         }
     }
 }
