@@ -11,3 +11,5 @@ C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\obj\Debug\netc
 C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\obj\Debug\netcoreapp3.1\Lab1.Security.dll
 C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\obj\Debug\netcoreapp3.1\Lab1.Security.pdb
 C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\obj\Debug\netcoreapp3.1\Lab1.Security.genruntimeconfig.cache
+C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\bin\Debug\netcoreapp3.1\Json.Net.dll
+C:\Users\dumitru.strelet\source\repos\Lab1.Security\Lab1.Security\obj\Debug\netcoreapp3.1\Lab1.Security.csproj.CopyComplete
