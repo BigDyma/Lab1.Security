@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace Lab1.Security
 {
     class Program

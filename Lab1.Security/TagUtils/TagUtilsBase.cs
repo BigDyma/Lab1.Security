@@ -10,18 +10,21 @@ namespace Lab1.Security
         protected int IndexOfClosingTagNoAttributes { get => Line.IndexOf(">");   }
         protected int IndexOfClosingTagWithAttributes { get => Line.IndexOf("\">"); }
 
+        protected int IndexOfStartingAttributeName { get => Line.IndexOf(" "); }
+
         protected int IndexOfMiddleTag { get => Line.IndexOf(":"); }
 
+        protected int IndexOfEndAttributeName { get => IndexOfMiddleTag ; }
         protected int IndexOfStartingAttributesValue { get => IndexOfMiddleTag +2; }
 
-        protected int IndexOfEndName { get => IndexOfMiddleTag; }
+        protected int IndexOfEndName { get => IndexOfStartingAttributeName; }
 
         protected int IndexOfOpeningClosingTag { get => IndexOfOpeningTag + 1; }
         public bool IsTagWithAttributes => IndexOfClosingTagWithAttributes > 0;
         protected string Line { get; set; }
         public TagUtilsBase(string line)
         {
-            Line = line;
+            Line = line.Trim() ;
         }
     }
 }

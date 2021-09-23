@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "7YrduvZm2hLPXyvQYve/TFxH/443udcHQIEvQ6cbY+1sMhX3xw8WDTjdmFltfFWWLfk9ImmjkFK5ddsuieYnXQ==",
+  "dgSpecHash": "yYHz5bQDU+rFdZcgzzw1+DqLv553guYX27esyvBwTUSyP8dFQXw8U1pwlcPCcmSp3GLSalBUlu/9V8d+Gj4bwg==",
   "success": true,
   "projectFilePath": "C:\\Users\\dumitru.strelet\\source\\repos\\Lab1.Security\\Lab1.Security\\Lab1.Security.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\dumitru.strelet\\.nuget\\packages\\json.net\\1.0.33\\json.net.1.0.33.nupkg.sha512"
+  ],
   "logs": []
 }

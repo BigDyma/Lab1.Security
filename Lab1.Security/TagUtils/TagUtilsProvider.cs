@@ -13,6 +13,7 @@ namespace Lab1.Security
 
         private string GetNameForTagWithAttributes => Line[IndexOfOpeningTag..IndexOfEndName];
 
+
         private string GetNameForTagNoAttributes => Line[IndexOfOpeningTag..IndexOfClosingTagNoAttributes];
 
         public string GetTagName
@@ -23,7 +24,12 @@ namespace Lab1.Security
                     return GetNameForTagWithAttributes;
                 else
                     return GetNameForTagNoAttributes;
-            }}
+            }
+        }
+
+
+
+        public string GetNameOfAttribute => Line[IndexOfStartingAttributeName..IndexOfEndAttributeName];
 
         public string GetClosingTagName => Line[IndexOfOpeningClosingTag..IndexOfClosingTagNoAttributes];
         public string GetTagValue => Line[IndexOfStartingAttributesValue..IndexOfClosingTagWithAttributes];

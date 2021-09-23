@@ -8,7 +8,7 @@ namespace Lab1.Security
     {
         public static Tag CreateTagWithAttributes(TagUtilsProvider provider)
         {
-            return new Tag(provider.GetTagName, provider.GetTagValue);
+            return new Tag(provider.GetTagName, new Attributes { Name=provider.GetNameOfAttribute, Value=provider.GetTagValue});
         }
 
         public static Tag CreateTagWithNoAttributes(TagUtilsProvider provider)

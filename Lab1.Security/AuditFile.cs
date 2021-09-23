@@ -23,7 +23,6 @@ namespace Lab1.Security
 
         }
 
-
         private List<Parameter> ParseParameters( ref int n)
         {
             var initialIndex = n;
@@ -34,14 +33,15 @@ namespace Lab1.Security
 
                 if (ParametersUtils.IsValidParameterAsClosedString(line) || ParametersUtils.IsValidParameterAsType(line) || ParametersUtils.IsValidParameterAsNonClosedString(line))
                 {
-                    if (ParametersUtils.IsValidParameterAsNonClosedString(line))
+                    if (ParametersUtils.IsValidParameterAsNonClosedString(line) && line.Trim().Last() != '"')
                     {
                         ParseOpenStringParameter(ref item, ref line);
                     }
                     parameters.Add(ParametersUtils.CreateParameterFromLineForClosedStrings(line));
                     n = item;
                 }
-                else break;
+                else if (TagUtilsProvider.IsValidTag(line) || TagUtilsProvider.IsValidClosingTag(line))
+                    break;
             }
 
             return parameters;
@@ -50,20 +50,24 @@ namespace Lab1.Security
         private void ParseOpenStringParameter(ref int item, ref string line)
         {
             int localIndex = item;
-            for (var openLine = localIndex; item <= Content.Length; item++)
+            for (var openLine = localIndex +1; openLine < Content.Length; openLine++)
             {
-                var lastChar = Content[openLine].Trim().Last();
-                if (lastChar == '"')
-                    break;
-
+               
                 line += Content[openLine];
 
                 item = openLine;
+
+                if (Content[openLine].EndsWith('"'))
+                    break;
+
+
             }
         }
 
         private Tag SearchForParameters(ref int n, Tag recoveryTag)
         {
+            if (recoveryTag.Name == "report")
+            { }
             for (int i = n+1; i < ContentLength; i++)
             {
                 var line = Content[i];
@@ -100,24 +104,29 @@ namespace Lab1.Security
         private Tag ReccursiveParsing(int n = 0, Tag recoveryTag = null)
         {
             if (n == ContentLength)
+            {
                 return null;
-            int localIndex;
-            Tag localTag;
+            }
 
-            TreatItLikeATag(n, recoveryTag, out localIndex, out localTag);
+
+            TreatItLikeATag(n, recoveryTag, out int localIndex, out Tag localTag);
 
             if (!localTag.IsTagClosed)
             {
                 for (int nestedIndex = localIndex; nestedIndex < ContentLength && !localTag.IsTagClosed;)
                 {
-                    var localline = Content[localIndex];
-                    Tag ChildTag = ReccursiveParsing(localIndex + 1, localTag);
+                    
 
+                    if (!localTag.IsTagClosed)
+                    {
+                        var line = Content[localIndex];
+                        Tag ChildTag = ReccursiveParsing(localIndex + 1, localTag);
+                        localIndex = ChildTag.closeTagIndex;
+                        nestedIndex = localIndex;
+                        localTag.RegisterChildTag(ChildTag);
 
-                    localIndex = ChildTag.closeTagIndex;
-                    nestedIndex = localIndex;
-                    localTag.RegisterChildTag(ChildTag);
-                    localTag = SearchForClosingTag(ref localIndex, localTag);
+                        localTag = SearchForClosingTag(ref localIndex, localTag);
+                    }
                 }
             }
            return localTag; 
@@ -146,12 +155,15 @@ namespace Lab1.Security
                     TagUtilsProvider closingTag = new TagUtilsProvider(line);
 
                     if (recoveryTag.CloseTag(closingTag.GetClosingTagName))
-                    { 
+                    {
                         recoveryTag.closeTagIndex = i;
                         n = i;
+                        return recoveryTag;
                     }
+                    else
+                        throw new Exception("si za huinea");
 
-                    return recoveryTag;
+                    
                 }
             }
             return recoveryTag;

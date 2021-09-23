@@ -8,8 +8,7 @@ namespace Lab1.Security
     public class Tag
     {
         public string Name { get;  set; }
-        public string Value { get ;  set ; }
-
+        public Attributes Attributes { get; set; }
         public bool IsTagClosed { get;  private set ; }
 
         public List<Tag> ChildTag = new List<Tag>();
@@ -32,10 +31,10 @@ namespace Lab1.Security
                 Parameters = parameters;
 
         }
-        public Tag(string _name, string _value)
+        public Tag(string _name, Attributes _attributes)
         {
             Name = _name;
-            Value = _value;
+            Attributes = _attributes;
         }
         public Tag(string _name)
         {

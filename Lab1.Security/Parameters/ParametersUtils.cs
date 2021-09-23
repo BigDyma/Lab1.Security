@@ -15,6 +15,7 @@ namespace Lab1.Security.Parameters
 
         public static bool IsValidParameter(string line) => IsValidParameterAsClosedString(line) || IsValidParameterAsNonClosedString(line) || IsValidParameterAsType(line);
 
+        public static bool IsComment(string line) => RegexHelpers.ValidateRegex(line, RegexHelpers.ComentRegex);
         public static Parameter CreateParameterFromLineForClosedStrings(string line)
         {
             var temp = line.Split(':');
