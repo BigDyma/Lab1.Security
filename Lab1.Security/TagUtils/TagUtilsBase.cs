@@ -20,7 +20,9 @@ namespace Lab1.Security
         protected int IndexOfEndName { get => IndexOfStartingAttributeName; }
 
         protected int IndexOfOpeningClosingTag { get => IndexOfOpeningTag + 1; }
-        public bool IsTagWithAttributes => IndexOfClosingTagWithAttributes > 0;
+        public bool IsTagWithAttributes => IndexOfClosingTagWithAttributes > 0 && IndexOfStartingAttributeName > 0;
+
+        public bool IsTagAnAttribute => IndexOfClosingTagWithAttributes > 0;
         protected string Line { get; set; }
         public TagUtilsBase(string line)
         {

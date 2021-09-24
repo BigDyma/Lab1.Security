@@ -23,8 +23,16 @@ namespace Lab1.Security
 
             if (provider.IsTagWithAttributes)
                 return CreateTagWithAttributes(provider);
+            else if (provider.IsTagAnAttribute)
+                return CreateTagAsAnAttribute(provider);
 
             return CreateTagWithNoAttributes(provider);
+        }
+
+        private static Tag CreateTagAsAnAttribute(TagUtilsProvider provider)
+        {
+            return new Tag(provider.GetTagName, provider.GetTagValue);
+
         }
     }
 }

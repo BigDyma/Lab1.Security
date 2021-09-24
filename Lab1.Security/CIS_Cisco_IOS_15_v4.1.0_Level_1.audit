@@ -81,7 +81,7 @@
 #</variables>
 #</ui_metadata>
 
-<check_type:"Cisco">
+<check_type>
 
 <if>
   <condition type:"AND">

@@ -1,4 +1,5 @@
 ﻿using Lab1.Security.Parameters;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +12,9 @@ namespace Lab1.Security
     {
         public string Path { get; set; } 
 
-        public Tag ResultJSON { get => ReccursiveParsing();  }
+        public string ResultJSON { get => JsonConvert.SerializeObject(Result);  }
 
+        private Tag Result => ReccursiveParsing();
         private string[] Content { get; set; }
 
         private int ContentLength => Content.Length;
@@ -57,7 +59,7 @@ namespace Lab1.Security
 
                 item = openLine;
 
-                if (Content[openLine].EndsWith('"'))
+                if (Content[openLine].EndsWith("\""))
                     break;
 
 

@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "yYHz5bQDU+rFdZcgzzw1+DqLv553guYX27esyvBwTUSyP8dFQXw8U1pwlcPCcmSp3GLSalBUlu/9V8d+Gj4bwg==",
+  "dgSpecHash": "u1gu0Ljj8obCGa28/0W9WsAVDjEaO538XE+Vgs+ZttCMc5PyKpBakL0psyA3PlUIs2xJ83VQhkgVnzzrEk1Nbw==",
   "success": true,
   "projectFilePath": "C:\\Users\\dumitru.strelet\\source\\repos\\Lab1.Security\\Lab1.Security\\Lab1.Security.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\dumitru.strelet\\.nuget\\packages\\json.net\\1.0.33\\json.net.1.0.33.nupkg.sha512"
+    "C:\\Users\\dumitru.strelet\\.nuget\\packages\\json.net\\1.0.33\\json.net.1.0.33.nupkg.sha512",
+    "C:\\Users\\dumitru.strelet\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }

@@ -13,6 +13,7 @@ namespace Lab1.Security
 
         private string GetNameForTagWithAttributes => Line[IndexOfOpeningTag..IndexOfEndName];
 
+        private string GetNameForTagAsAttribute => Line[IndexOfOpeningTag..IndexOfMiddleTag];
 
         private string GetNameForTagNoAttributes => Line[IndexOfOpeningTag..IndexOfClosingTagNoAttributes];
 
@@ -20,8 +21,10 @@ namespace Lab1.Security
         {
             get
             {
-                if (IndexOfEndName >= 0)
+                if (IndexOfEndName >= 0 && IndexOfMiddleTag > 0)
                     return GetNameForTagWithAttributes;
+                else if (IndexOfMiddleTag > 0)
+                    return GetNameForTagAsAttribute;
                 else
                     return GetNameForTagNoAttributes;
             }
